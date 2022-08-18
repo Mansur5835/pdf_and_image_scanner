@@ -1,26 +1,22 @@
 const express = require("express");
 const pdfParse = require("pdf-parse");
-const fileUpload = require("express-fileupload");
 const fs = require("fs");
 const tesseract = require("tesseract.js");
 const multer = require('multer');
-
 const app = express();
+const winston = require("winston");
 
-// app.use(fileUpload());
 app.use(express.json())
 app.set('view engine', 'ejs');
+require("./config/prod")(app);
 
-// console.log(uploader);
+
+
 
 const storageImage = multer.diskStorage({
     destination: function (req, file, cd) {
         console.log(file);
-
         cd(null, "images")
-
-
-
     },
     filename: function (req, file, cd) {
 
@@ -49,7 +45,7 @@ const uploadImage = multer(
 
 const uploadPdf = multer(
     {
-        storage: storageImage
+        storage: storagePdf
     }
 ).single('pdf')
 
@@ -86,9 +82,17 @@ app.post("/image-to-text", uploadImage, (req, res) => {
 
 
 
-app.listen(2000, () => {
-    console.log("00000----------111111");
+const post = process.env.PORT || 2000;
+
+console.log(app.get("env"));
+
+
+const server = app.listen(post, () => {
+    winston.info("00000----------111111")
+
 })
+
+module.exports = server;
 
 
 
